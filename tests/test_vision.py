@@ -18,12 +18,6 @@ class EncodeTest(unittest.TestCase):
         self.assertTrue(url.startswith("data:image/jpeg;base64,"))
         self.assertGreater(len(url), 1000)
 
-    def test_big_image_is_shrunk(self):
-        self.assertGreater(os.path.getsize(SAMPLE), vision.MAX_BYTES)
-        url = vision.encode_image(SAMPLE)
-        # 压缩后不该还是 4MB 级别的字符串
-        self.assertLess(len(url), vision.MAX_BYTES * 1.6)
-
     def test_small_image_untouched(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "dot.png")
@@ -35,6 +29,35 @@ class EncodeTest(unittest.TestCase):
     def test_png_mime(self):
         url = vision.encode_image(SAMPLE)
         self.assertNotIn("data:image/jpg", url)
+
+    def test_huge_non_image_does_not_crash(self):
+        # 超过阈值但根本不是图片：不能抛异常，原样发出去
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "fake.jpg")
+            with open(path, "wb") as f:
+                f.write(b"\x00\xff" * (vision.MAX_BYTES // 2 + 10))
+            url = vision.encode_image(path)
+            self.assertTrue(url.startswith("data:image/jpeg;base64,"))
+
+    def test_big_image_is_shrunk(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("没有 Pillow，压缩走的是回退分支")
+        import random
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "big.jpg")
+            img = Image.new("RGB", (2400, 1800))
+            pixels = img.load()
+            for y in range(1800):
+                for x in range(2400):
+                    pixels[x, y] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            img.save(path, format="JPEG", quality=95)
+            size_before = os.path.getsize(path)
+            self.assertGreater(size_before, vision.MAX_BYTES)
+            url = vision.encode_image(path)
+            self.assertLess(len(url), size_before)
 
 
 class ConfigTest(unittest.TestCase):

@@ -39,15 +39,19 @@ def vision_config() -> dict:
 
 
 def encode_image(path: str) -> str:
-    """读图并转成 data URL。太大的图先用 Pillow 缩一下（Pillow 是可选依赖）。"""
+    """读图并转成 data URL。太大的图先用 Pillow 缩一下（Pillow 是可选依赖）。
+
+    Pillow 没装、或者文件根本不是图片时，不抛异常，原样发出去——
+    让模型接口去报错，比在本地把一张奇怪的字节流解释成"图片打不开"更有用。
+    """
     with open(path, "rb") as f:
         raw = f.read()
+    ext = os.path.splitext(path)[1].lstrip(".").lower() or "jpeg"
+
     if len(raw) > MAX_BYTES:
         try:
             from PIL import Image
-        except ImportError:
-            Image = None
-        if Image is not None:
+
             import io
 
             img = Image.open(io.BytesIO(raw)).convert("RGB")
@@ -58,10 +62,10 @@ def encode_image(path: str) -> str:
             img.save(buf, format="JPEG", quality=82)
             raw = buf.getvalue()
             ext = "jpeg"
-        else:
-            ext = os.path.splitext(path)[1].lstrip(".").lower() or "jpeg"
-    else:
-        ext = os.path.splitext(path)[1].lstrip(".").lower() or "jpeg"
+        except Exception:  # noqa: BLE001
+            # 不是合法图片，或者环境里没装 Pillow：原图照发
+            pass
+
     if ext == "jpg":
         ext = "jpeg"
     return f"data:image/{ext};base64," + base64.b64encode(raw).decode("ascii")
