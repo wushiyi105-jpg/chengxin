@@ -6,7 +6,7 @@ Photograph a plate and it tells you roughly how many calories are on it.
 
 The split is rigid: **the model only answers "what is this, roughly how many grams", calories are always multiplied out locally from the nutrition table.** The model may not compute calories, nor say things like "about 800 kcal" — that is not its sentence to say.
 
-![demo](assets/demo.gif)
+![usage](assets/demo.gif)
 
 ## Why split it this way
 
