@@ -129,6 +129,53 @@ cp .env.example .env      # fill in VISION_API_KEY and VISION_BASE_URL
 python -m chengxin analyze samples/meal-1.jpg
 ```
 
+Run in Docker (the container uses the default port 8771):
+
+```bash
+docker build -t chengxin .
+docker run -p 8771:8771 chengxin
+```
+
+## 🤔 Why not just ask a general LLM
+
+A general model looking at a plate will say "about 800 kcal". Chengxin adds the three things it cannot:
+
+1. **Calories are multiplied out locally** — the model only says what the food is and roughly how many grams; calories, protein, fat and carbs come from the local nutrition table. The model may not state "about 800 kcal", because it has no reliable portion scale.
+2. **Reproducible results** — the same recognition produces the same multiplication every time, so recomputing or auditing a past record gives matching numbers.
+3. **Records stay local** — meal photos, recognitions and daily intake stay on this machine; a diet log is personal data and is not uploaded, and a model call sends only the current image.
+4. **Structured output** — each dish, its grams, calories and macros are separate fields that aggregate by day; a chat reply is one estimate you cannot add up.
+
+## 🎯 Use cases
+
+- **Logging a meal while cutting fat**: photograph the plate, get per-item calories and protein, and know whether this meal went over without weighing every bite.
+- **Estimating canteen or takeaway food**: menus rarely list calories; one photo gives a ballpark, and after a while you know your usual dishes.
+- **Checking whether protein is enough**: during strength training, read protein per item instead of only total calories.
+
+## 🗺 Roadmap
+
+- **Expand the nutrition table**: cover more home-style dishes and takeaway categories so "not in the table" is rarer.
+- **Merge several plates into one meal**: photograph staples, dishes and soup separately and combine them into one record.
+- **Daily totals**: accumulate calories and macros per day into a trend line.
+- **Portion references**: encourage a bowl or spoon in the photo to improve gram estimates.
+- **Export intake**: a CSV of a period for a coach or a doctor.
+
+## ❓ FAQ
+
+**Where do I get an API key?**
+A vision model is needed: a multimodal key such as Zhipu's `glm-4.6v-flashx`, set as `VISION_API_KEY` in `.env`; a text-model key can be the same one.
+
+**Where is data stored, and is it uploaded?**
+Photo paths, recognitions and computed results live in local SQLite; a model call sends the current image, not your diet history.
+
+**Does it work without a key?**
+It cannot read new photos, only browse existing records. The image step requires a model.
+
+**How do I switch models?**
+Change `VISION_BASE_URL`, `VISION_MODEL` and `VISION_API_KEY` as in `.env.example`.
+
+**Why won't it just say "this meal is 800 kcal"?**
+Because the model has no reliable portions, so a total would be a guess. It admits only what the food is and roughly how many grams, leaving the arithmetic to the local table so you can see where each number comes from.
+
 ## Design trade-offs
 
 - **Zero runtime dependencies.** HTTP, JSON, base64, SQLite are all standard library. Pillow is only for shrinking images, and it runs without it.
