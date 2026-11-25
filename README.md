@@ -1,5 +1,7 @@
 # 秤心 chengxin
 
+[![test](https://github.com/wushiyi105-jpg/chengxin/workflows/test/badge.svg)](https://github.com/wushiyi105-jpg/chengxin/actions)
+
 拍一张餐盘照片，它告诉你这一盘大概多少热量。
 
 分工很硬：**模型只负责「这是什么、大概多少克」，热量一律由本地营养表乘出来。** 模型不许算热量，也不许说「约 800 千卡」这种话——那不是它该说的。
