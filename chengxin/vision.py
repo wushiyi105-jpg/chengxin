@@ -50,9 +50,9 @@ def encode_image(path: str) -> str:
 
     if len(raw) > MAX_BYTES:
         try:
-            from PIL import Image
-
             import io
+
+            from PIL import Image
 
             img = Image.open(io.BytesIO(raw)).convert("RGB")
             scale = (MAX_BYTES / len(raw)) ** 0.5

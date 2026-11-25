@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 
-from chengxin import cli, nutrition, vision
+from chengxin import cli, vision
 
 SAMPLE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "samples", "meal-1.jpg")
 

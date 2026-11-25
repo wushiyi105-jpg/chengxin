@@ -1,6 +1,6 @@
 # 秤心 chengxin
 
-[![test](https://github.com/wushiyi105-jpg/chengxin/workflows/test/badge.svg)](https://github.com/wushiyi105-jpg/chengxin/actions) [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)]() [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![test](https://github.com/wushiyi105-jpg/chengxin/workflows/test/badge.svg)](https://github.com/wushiyi105-jpg/chengxin/actions) [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)]() [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE) [![codecov](https://codecov.io/gh/wushiyi105-jpg/chengxin/branch/main/graph/badge.svg)](https://codecov.io/gh/wushiyi105-jpg/chengxin)
 
 拍一张餐盘照片，它告诉你这一盘大概多少热量。
 
@@ -85,6 +85,20 @@ python -m chengxin analyze samples/meal-1.jpg --name "周三午饭"
 **base64 解码器不报错。** 传一段 `###` 上去，`base64.b64decode` 不抛异常，它「尽力而为」解出一个空串，然后程序欢天喜地拿空文件去调模型。修法是 `validate=True` 再检查长度，两个都要——单靠 validate 对某些畸形串还是能解出东西。
 
 **模型爱把标签抄进值里。** 提示词写 `"table_note": "一句话：……"`，它返回的字段内容就是 `"一句话：这是家常午餐的餐盘"`。加个前缀剥离，报告里才不会出现「场景：一句话：……」。
+
+## 数据流
+
+一条数据在这几个模块之间怎么走：
+
+```mermaid
+flowchart LR
+    A[餐盘照片] --> B[vision.py<br/>模型只说有什么、多少克]
+    B --> C{meal.py<br/>条目能不能对上营养表}
+    C -->|对不上| D[标为未识别]
+    C -->|对得上| E[nutrition.py<br/>本地表乘出热量]
+    E --> F[meal.py<br/>合计 · 标注区间]
+    F --> G[store.py → cli.py / web.py]
+```
 
 ## 测试
 
