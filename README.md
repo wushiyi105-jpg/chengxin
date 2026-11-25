@@ -1,6 +1,6 @@
 # 秤心 chengxin
 
-[![test](https://github.com/wushiyi105-jpg/chengxin/workflows/test/badge.svg)](https://github.com/wushiyi105-jpg/chengxin/actions)
+[![test](https://github.com/wushiyi105-jpg/chengxin/workflows/test/badge.svg)](https://github.com/wushiyi105-jpg/chengxin/actions) [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)]() [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 拍一张餐盘照片，它告诉你这一盘大概多少热量。
 
