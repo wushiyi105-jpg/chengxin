@@ -20,7 +20,7 @@ MAX_BODY = 12 * 1024 * 1024
 PAGE = """<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>秤心 · 这盘多少热量</title>
+<title>秤心 · 这一餐吃了什么</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0f14;color:#c9d1d9;font:15px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
@@ -44,8 +44,76 @@ button:disabled{opacity:.6;cursor:wait}
 .item b{font-weight:600}
 .warn{color:#e3b341}
 h2{font-size:15px;margin:22px 0 8px;color:#c9d1d9}
+
+:root{--maxw:1060px;--bg:#f7f7f2;--card:#fffef9;--ink:#252923;--text:#252923;--dim:#6e766c;--line:#d5dbd2;--accent:#5b7f58;--muted:#6e766c}
+.wrap{max-width:1060px}
+body{background:#f7f7f2;color:#252923;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+h1{color:#252923}
+header{max-width:1060px;margin:0 auto}
+input,textarea,select{background:#fff;color:#252923;border-color:#d5dbd2;border-radius:2px}
+button:not(.ghost):not(.tab){background:#5b7f58;color:#fff;border-radius:2px}
+button.ghost{background:transparent!important;color:#5b7f58!important;border:1px solid #d5dbd2!important}
+h2,h3{color:#5b7f58}
+pre{background:#fafaf6;color:#252923;border-color:#d5dbd2}
+.item,.card{border-color:#d5dbd2;background:#fffef9}
+.k,.empty,.hint{color:#6e766c}
+
+h1{font-size:clamp(31px,5vw,39px);line-height:1.26}
+.prod{display:block;font-size:11px;line-height:1.4;letter-spacing:.18em;font-weight:650;margin-bottom:8px;opacity:.72}
+.lede,.sub{max-width:62ch;line-height:1.75}
+.route{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin:16px auto 20px;border:1px solid var(--line);background:var(--line);max-width:var(--maxw)}
+.route span{padding:11px 13px;background:var(--card);font-size:12px;line-height:1.5}
+.route b{display:block;font-size:10px;letter-spacing:.1em;margin-bottom:3px;opacity:.66}
+button{min-height:46px}
+input,select{min-height:44px}
+pre{white-space:pre-wrap}
+@media(max-width:680px){
+  .wrap{padding:20px 16px 56px}
+  .route{grid-template-columns:1fr}
+  h1{font-size:30px!important}
+  .row>div{min-width:100%!important}
+  button{width:100%}
+}
+
+body{background:#f7f7f2;color:#252923}
+header{display:block!important;max-width:1060px;margin:0 auto;padding:24px 20px 0;border:0;background:transparent}
+header h1{color:#252923;font-size:38px;line-height:1.25;letter-spacing:-.02em}
+header .sub{display:block;color:#6e766c;font-size:14px;margin-top:6px}
+main{max-width:1060px;margin:0 auto;border-left:1px solid #d5dbd2;border-right:1px solid #d5dbd2;background:#fffef9;min-height:calc(100vh - 140px)}
+aside{background:#f2f4ef;border-right:1px solid #d5dbd2;padding:20px}
+section{background:#fffef9;padding:22px}
+input,textarea,select{background:#fff;color:#252923;border-color:#d2d9d0;border-radius:2px}
+input:focus,textarea:focus,select:focus{border-color:#5b7f58;box-shadow:0 0 0 2px #dce7da}
+button{background:#5b7f58;border-radius:2px;color:#fff}
+button:disabled{opacity:.5}
+.drop{border:2px dashed #b9c8b6;background:#fff;color:#5f6e5d;border-radius:2px}
+.drop:hover{border-color:#5b7f58;color:#252923}
+h2{color:#405a3e;font-size:14px;letter-spacing:.06em}
+.k,.empty{color:#6e766c}
+.item{border-color:#d5dbd2;background:#fff}
+
+
+/* mobile-32 */
+input[type=text],input[type=number],input[type=email]{background:#fff;color:#252923;border-color:#d5dbd2}
+
+@media(max-width:760px){
+  main{grid-template-columns:1fr!important}
+  aside{border-right:0!important;border-bottom:1px solid #d5dbd2;width:auto!important}
+  section{padding:16px!important}
+  .row{flex-wrap:wrap!important}
+  .row>div{min-width:100%!important}
+  h1{font-size:30px!important}
+  .route{grid-template-columns:1fr!important}
+  button{min-height:48px}
+  pre{overflow-x:auto}
+}
+
+/* mobile-height */
+@media(max-width:760px){main{min-height:auto!important}aside{min-height:0!important}}
 </style></head><body>
-<header><h1>秤心</h1><span class="sub">模型只认食物和克重，热量由本地营养库乘出来</span></header>
+<header><h1><span class="prod">秤心</span>这一餐，实际吃了什么</h1><p class="lede">给只想回看日常饮食的人：拍一餐后逐项确认食物和估计份量，看不清就给可编辑区间或留空；修正后按营养表重算，并显示数据出处。</p></header>
+  <div class="route" aria-label="任务步骤"><span><b>01</b>拍一张餐盘</span><span><b>02</b>逐项确认食物</span><span><b>03</b>改份量后重算</span></div>
+
 <main>
 <aside>
   <div class="drop" id="drop">点这里选一张餐盘照片<br><span class="k">jpg / png，越正对盘子越准</span></div>
